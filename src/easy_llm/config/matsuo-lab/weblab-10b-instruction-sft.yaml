@@ -1,18 +1,17 @@
-prompt: "### 指示:\n{user_content}\n\n### 応答:\n"
-name_or_path: stockmark/stockmark-100b-instruct-v0.1
+prompt: "以下は、タスクを説明する指示です。要求を適切に満たす応答を書きなさい。\n\n### 指示:\n{user_content}\n\n### 応答:"
+name_or_path: matsuo-lab/weblab-10b-instruction-sft
 
 model:
-  peft: true
+  peft: false
   from_pretrained:
     pretrained_model_name_or_path: ${name_or_path}
     device_map: auto
-    torch_dtype: torch.bfloat16
+    torch_dtype: torch.float16
 
   generate:
     do_sample: true
     temperature: 0.7
     top_p: 0.95
-    repetition_penalty: 1.08
     max_new_tokens: 1000
 
 tokenizer:
@@ -21,6 +20,7 @@ tokenizer:
 
   encode:
     return_tensors: pt
+    add_special_tokens: false
 
   decode:
     skip_special_tokens: true
