@@ -1,0 +1,30 @@
+prompt:
+  system:
+    content: 以下は、タスクを説明する指示です。要求を適切に満たす応答を書きなさい。
+name_or_path: llm-jp/llm-jp-13b-instruct-full-ac_001_16x-dolly-ichikara_004_001_single-oasst-oasst2-v2.0
+
+model:
+  peft: false
+  from_pretrained:
+    pretrained_model_name_or_path: ${name_or_path}
+    device_map: auto
+    torch_dtype: torch.bfloat16
+
+  generate:
+    do_sample: true
+    temperature: 0.7
+    top_p: 0.95
+    repetition_penalty: 1.05
+    max_new_tokens: 1000
+
+tokenizer:
+  from_pretrained:
+    pretrained_model_name_or_path: ${name_or_path}
+
+  apply_chat_template: 
+    add_generation_prompt: true
+    tokenize: true
+    return_tensors: pt
+
+  decode:
+    skip_special_tokens: true

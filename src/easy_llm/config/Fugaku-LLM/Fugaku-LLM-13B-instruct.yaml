@@ -1,0 +1,28 @@
+prompt: "以下は、タスクを説明する指示です。要求を適切に満たす応答を書きなさい。\n\n### 指示:\n{user_content}\n\n### 応答:\n"
+name_or_path: Fugaku-LLM/Fugaku-LLM-13B-instruct
+
+model:
+  peft: false
+  from_pretrained:
+    pretrained_model_name_or_path: ${name_or_path}
+    device_map: auto
+    torch_dtype: torch.bfloat16
+
+  generate:
+    do_sample: true
+    temperature: 0.1
+    top_p: 1.0
+    repetition_penalty: 1.0
+    top_k: 0
+    max_new_tokens: 1000
+
+tokenizer:
+  from_pretrained:
+    pretrained_model_name_or_path: ${name_or_path}
+
+  encode:
+    add_special_tokens: false
+    return_tensors: pt
+
+  decode:
+    skip_special_tokens: true

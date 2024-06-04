@@ -1,0 +1,26 @@
+prompt: "### 指示:\n{instruction}\n\n### 応答:\n"
+name_or_path: stockmark/stockmark-100b-instruct-v0.1
+
+model:
+  peft: true
+  from_pretrained:
+    pretrained_model_name_or_path: ${name_or_path}
+    device_map: auto
+    torch_dtype: torch.bfloat16
+
+  generate:
+    do_sample: true
+    temperature: 0.7
+    top_p: 0.95
+    repetition_penalty: 1.08
+    max_new_tokens: 1000
+
+tokenizer:
+  from_pretrained:
+    pretrained_model_name_or_path: ${name_or_path}
+
+  encode:
+    return_tensors: pt
+
+  decode:
+    skip_special_tokens: true
