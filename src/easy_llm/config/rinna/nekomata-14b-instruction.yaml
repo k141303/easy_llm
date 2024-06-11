@@ -1,0 +1,30 @@
+prompt: "\n以下は、タスクを説明する指示と、文脈のある入力の組み合わせです。要求を適切に満たす応答を書きなさい。\n\n### 指示:\n{user_content}\n\n### 応答:\n"
+name_or_path: rinna/nekomata-14b-instruction
+
+model:
+  peft: false
+  eval: true
+  from_pretrained:
+    pretrained_model_name_or_path: ${name_or_path}
+    trust_remote_code: true
+    device_map: auto
+
+  generate:
+    pad_token_id: self.tokenizer.pad_token_id
+    eos_token_id: self.tokenizer.eos_token_id
+    bos_token_id: self.tokenizer.bos_token_id
+    do_sample: true
+    temperature: 0.5
+    max_new_tokens: 1000
+
+tokenizer:
+  from_pretrained:
+    pretrained_model_name_or_path: ${name_or_path}
+    trust_remote_code: true
+
+  encode:
+    return_tensors: pt
+    add_special_tokens: false
+
+  decode:
+    skip_special_tokens: true

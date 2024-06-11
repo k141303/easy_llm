@@ -1,0 +1,10 @@
+name_or_path: karakuri-ai/karakuri-lm-70b-chat-v0.1
+
+pipeline:
+  init:
+    task: conversational
+    model: ${name_or_path}
+    device_map: auto
+    torch_dtype: auto
+  call:
+    max_new_tokens: 1000

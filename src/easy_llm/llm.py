@@ -5,7 +5,13 @@ from omegaconf import OmegaConf
 
 import torch
 
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import (
+    AutoTokenizer,
+    AutoModelForCausalLM,
+    TextStreamer,
+    pipeline,
+    Conversation,
+)
 from peft import AutoPeftModelForCausalLM
 
 load_dotenv()
@@ -15,25 +21,42 @@ class LLM(object):
     def __init__(self, cfg_path):
         self.cfg = OmegaConf.load(cfg_path)
 
-        self.tokenizer = AutoTokenizer.from_pretrained(
-            **self.wrp_tokenizer_from_pretrained(**self.cfg.tokenizer.from_pretrained)
-        )
-
-        if self.cfg.model.peft:
-            self.model = AutoPeftModelForCausalLM.from_pretrained(
-                **self.wrp_model_from_pretrained(**self.cfg.model.from_pretrained)
-            )
-        else:
-            self.model = AutoModelForCausalLM.from_pretrained(
-                **self.wrp_model_from_pretrained(**self.cfg.model.from_pretrained)
+        self.tokenizer = None
+        if "tokenizer" in self.cfg:
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                **self.wrp_tokenizer_from_pretrained(
+                    **self.cfg.tokenizer.from_pretrained
+                )
             )
 
-        print(
-            "Load: {}".format(
-                self.cfg.model.from_pretrained.pretrained_model_name_or_path
+        self.streamer = None
+        if "textstreamer" in self.cfg:
+            self.streamer = TextStreamer(
+                self.tokenizer,
+                **self.cfg.textstreamer,
             )
-        )
-        self.model.eval()
+
+        self.model = None
+        if "model" in self.cfg:
+            if self.cfg.model.peft:
+                self.model = AutoPeftModelForCausalLM.from_pretrained(
+                    **self.wrp_model_from_pretrained(**self.cfg.model.from_pretrained)
+                )
+            else:
+                self.model = AutoModelForCausalLM.from_pretrained(
+                    **self.wrp_model_from_pretrained(**self.cfg.model.from_pretrained)
+                )
+
+        self.pipeline = None
+        if "pipeline" in self.cfg:
+            self.pipeline = pipeline(
+                **self.wrp_pipeline_init(**self.cfg.pipeline.init),
+            )
+
+        if self.model is not None and self.cfg.model.get("eval"):
+            self.model.eval()
+
+        print(f"Load: {self.cfg.name_or_path}")
 
     def wrp_tokenizer_from_pretrained(self, **kwargs):
         kwargs["token"] = os.environ["HF_TOKEN"]
@@ -43,17 +66,56 @@ class LLM(object):
     def wrp_model_from_pretrained(self, **kwargs):
         kwargs["token"] = os.environ["HF_TOKEN"]
         kwargs["cache_dir"] = os.environ.get("HF_CACHE_DIR", "./.cache")
-        if "torch_dtype" in kwargs:
+        if "torch_dtype" in kwargs and kwargs["torch_dtype"] != "auto":
             kwargs["torch_dtype"] = eval(kwargs["torch_dtype"])
         return kwargs
 
+    def wrp_pipeline_init(self, **kwargs):
+        if self.model is not None:
+            kwargs["model"] = self.model
+        if self.tokenizer is not None:
+            kwargs["tokenizer"] = self.tokenizer
+        kwargs["model_kwargs"] = {
+            "cache_dir": os.environ.get("HF_CACHE_DIR", "./.cache"),
+        }
+        if "torch_dtype" in kwargs and kwargs["torch_dtype"] != "auto":
+            kwargs["torch_dtype"] = eval(kwargs["torch_dtype"])
+        return kwargs
+
+    def wrp_model_generate(self, **kwargs):
+        if type(kwargs.get("pad_token_id")) is str:
+            kwargs["pad_token_id"] = eval(kwargs["pad_token_id"])
+        if type(kwargs.get("eos_token_id")) is str:
+            kwargs["eos_token_id"] = eval(kwargs["eos_token_id"])
+        if type(kwargs.get("bos_token_id")) is str:
+            kwargs["bos_token_id"] = eval(kwargs["bos_token_id"])
+        return kwargs
+
     def get_chat(self, user_content):
-        return [
-            {"role": "system", "content": self.cfg.prompt.system.content},
-            {"role": "user", "content": user_content},
-        ]
+        chat = []
+        if self.cfg.get("prompt") is not None:
+            chat.append({"role": "system", "content": self.cfg.prompt.system.content})
+        chat.append({"role": "user", "content": user_content})
+        return chat
 
     def __call__(self, user_content):
+        if self.pipeline is not None:
+            if "convasation" in self.cfg:
+                messages = Conversation(user_content)
+            else:
+                messages = self.get_chat(user_content)
+
+            if "apply_chat_template" in self.cfg.get("tokenizer", {}):
+                messages = self.tokenizer.apply_chat_template(
+                    messages, **self.cfg.tokenizer.apply_chat_template
+                )
+
+            if self.cfg.pipeline.init.task == "text-generation":
+                return self.pipeline(messages, **self.cfg.pipeline.call)[-1][
+                    "generated_text"
+                ]
+            return self.pipeline(messages, **self.cfg.pipeline.call)[-1]["content"]
+
         if "apply_chat_template" in self.cfg.tokenizer:
             chat = self.get_chat(
                 user_content,
@@ -73,10 +135,17 @@ class LLM(object):
                 ).input_ids.to(self.model.device)
 
         with torch.no_grad():
-            output = self.model.generate(
-                tokenized_input,
-                **self.cfg.model.generate,
-            )[0]
+            if self.streamer is not None:
+                output = self.model.generate(
+                    tokenized_input,
+                    streamer=self.streamer,
+                    **self.wrp_model_generate(**self.cfg.model.generate),
+                )[0]
+            else:
+                output = self.model.generate(
+                    tokenized_input,
+                    **self.wrp_model_generate(**self.cfg.model.generate),
+                )[0]
 
         output = output[tokenized_input.size(-1) :]
         return self.tokenizer.decode(output, **self.cfg.tokenizer.decode)

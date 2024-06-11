@@ -1,0 +1,27 @@
+prompt: "以下に、あるタスクを説明する指示があります。リクエストを適切に完了するための回答を記述してください。\n\n### 指示:\n{user_content}\n\n### 応答:"
+name_or_path: tokyotech-llm/Swallow-70b-instruct-hf
+
+model:
+  peft: false
+  from_pretrained:
+    pretrained_model_name_or_path: ${name_or_path}
+    device_map: auto
+    torch_dtype: torch.bfloat16
+    low_cpu_mem_usage: true
+
+  generate:
+    do_sample: true
+    temperature: 0.99
+    top_p: 0.95
+    max_new_tokens: 1000
+
+tokenizer:
+  from_pretrained:
+    pretrained_model_name_or_path: ${name_or_path}
+
+  encode:
+    add_special_tokens: false
+    return_tensors: pt
+
+  decode:
+    skip_special_tokens: true

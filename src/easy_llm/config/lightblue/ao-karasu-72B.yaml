@@ -1,0 +1,28 @@
+name_or_path: lightblue/ao-karasu-72B
+
+prompt:
+  system:
+    content: あなたはAIアシスタントです。
+
+model:
+  peft: false
+  from_pretrained:
+    pretrained_model_name_or_path: ${name_or_path}
+    device_map: auto
+
+tokenizer:
+  from_pretrained:
+    pretrained_model_name_or_path: ${name_or_path}
+
+  apply_chat_template:
+    add_generation_prompt: true
+    tokenize: false
+
+pipeline:
+  init:
+    task: text-generation
+  call:
+    max_new_tokens: 1000
+    do_sample: false
+    temperature: 0.0
+    return_full_text: false
