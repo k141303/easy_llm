@@ -111,9 +111,12 @@ class LLM(object):
                 )
 
             if self.cfg.pipeline.init.task == "text-generation":
-                return self.pipeline(messages, **self.cfg.pipeline.call)[-1][
+                messages = self.pipeline(messages, **self.cfg.pipeline.call)[-1][
                     "generated_text"
                 ]
+                if type(messages) is list:
+                    messages = messages[-1]["content"]
+                return messages
             return self.pipeline(messages, **self.cfg.pipeline.call)[-1]["content"]
 
         if "apply_chat_template" in self.cfg.tokenizer:
