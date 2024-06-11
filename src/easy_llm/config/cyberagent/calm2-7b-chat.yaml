@@ -20,6 +20,9 @@ tokenizer:
   encode:
     return_tensors: pt
 
+  decode:
+    skip_special_tokens: true
+
 textstreamer:
   skip_prompt: true
   skip_special_tokens: true
