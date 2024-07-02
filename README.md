@@ -1,3 +1,27 @@
+## インストール
+
+```bash
+pip install .
+```
+
+## 環境変数
+
+```bash
+export HF_TOKEN=YOUR_HUGGINGFACE_ACCESS_TOKEN
+export HF_CACHE_DIR=DIR_NAME
+```
+
+## 使い方
+
+```python
+from easy_llm import load_llm
+
+MODEL_NAME = "llm-jp/llm-jp-13b-instruct-full-ac_001_16x-dolly-ichikara_004_001_single-oasst-oasst2-v2.0"
+
+model = load_llm(MODEL_NAME)
+print(model("自然言語処理とは何か"))
+```
+
 ## 実装済みモデル
 
 ### 国産
