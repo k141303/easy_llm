@@ -4,5 +4,6 @@ pipeline:
   init:
     task: text-generation
     model: ${name_or_path}
+    device_map: auto
   call:
     max_new_tokens: 1000
