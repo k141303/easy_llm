@@ -24,7 +24,7 @@ model = load_llm(MODEL_NAME)
 print(model("自然言語処理とは何か"))
 ```
 
-## 実装済みモデル
+## 対応済みモデル
 
 ### 国産
 - cyberagent/calm2-7b-chat
