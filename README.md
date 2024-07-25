@@ -28,6 +28,7 @@ print(model("自然言語処理とは何か"))
 
 ### 国産
 - cyberagent/calm2-7b-chat
+- cyberagent/calm3-22b-chat
 - Fugaku-LLM/Fugaku-LLM-13B-instruct
 - karakuri-ai/karakuri-lm-70b-chat-v0.1
 - lightblue/ao-karasu-72B
