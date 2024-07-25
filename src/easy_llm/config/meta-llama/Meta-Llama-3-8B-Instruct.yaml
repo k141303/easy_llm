@@ -1,0 +1,19 @@
+prompt:
+  system:
+    content: You are a pirate chatbot who always responds in pirate speak!
+name_or_path: meta-llama/Meta-Llama-3-8B-Instruct
+
+pipeline:
+  init:
+    task: text-generation
+    model: ${name_or_path}
+    device_map: auto
+    model_kwargs:
+      torch_dtype: torch.bfloat16
+
+  call:
+    max_new_tokens: 1000
+    do_sample: true
+    temperature: 0.6
+    top_p: 0.9
+    eos_token_id: [128009, 128009]

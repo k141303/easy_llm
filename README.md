@@ -43,6 +43,7 @@ print(model("自然言語処理とは何か"))
 ### 海外産
 - microsoft/Phi-3-medium-4k-instruct
 - mistralai/Mistral-7B-Instruct-v0.3
+- meta-llama/Meta-Llama-3-8B-Instruct
 - meta-llama/Meta-Llama-3-70B-Instruct
 - google/gemma-1.1-7b-it
 - Qwen/Qwen2-72B-Instruct
