@@ -123,9 +123,15 @@ class LLM(object):
             chat = self.get_chat(
                 user_content,
             )
-            tokenized_input = self.tokenizer.apply_chat_template(
+            chat_template = self.tokenizer.apply_chat_template(
                 chat, **self.cfg.tokenizer.apply_chat_template
-            ).to(self.model.device)
+            )
+            if not self.cfg.tokenizer.apply_chat_template.get("tokenize", True):
+                tokenized_input = self.tokenizer.encode(
+                    chat_template, **self.cfg.tokenizer.encode
+                ).to(self.model.device)
+            else:
+                tokenized_input = chat_template.to(self.model.device)
         else:
             prompt = self.cfg.prompt.format(user_content=user_content)
             if "encode" in self.cfg.tokenizer:
