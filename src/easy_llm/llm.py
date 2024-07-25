@@ -98,27 +98,27 @@ class LLM(object):
         chat.append({"role": "user", "content": user_content})
         return chat
 
-    def __call__(self, user_content):
-        if self.pipeline is not None:
-            if "convasation" in self.cfg:
-                messages = Conversation(user_content)
-            else:
-                messages = self.get_chat(user_content)
+    def pipeline_inference(self, user_content):
+        if "convasation" in self.cfg:
+            messages = Conversation(user_content)
+        else:
+            messages = self.get_chat(user_content)
 
-            if "apply_chat_template" in self.cfg.get("tokenizer", {}):
-                messages = self.tokenizer.apply_chat_template(
-                    messages, **self.cfg.tokenizer.apply_chat_template
-                )
+        if "apply_chat_template" in self.cfg.get("tokenizer", {}):
+            messages = self.tokenizer.apply_chat_template(
+                messages, **self.cfg.tokenizer.apply_chat_template
+            )
 
-            if self.cfg.pipeline.init.task == "text-generation":
-                messages = self.pipeline(messages, **self.cfg.pipeline.call)[-1][
-                    "generated_text"
-                ]
-                if type(messages) is list:
-                    messages = messages[-1]["content"]
-                return messages
-            return self.pipeline(messages, **self.cfg.pipeline.call)[-1]["content"]
+        if self.cfg.pipeline.init.task == "text-generation":
+            messages = self.pipeline(messages, **self.cfg.pipeline.call)[-1][
+                "generated_text"
+            ]
+            if type(messages) is list:
+                messages = messages[-1]["content"]
+            return messages
+        return self.pipeline(messages, **self.cfg.pipeline.call)[-1]["content"]
 
+    def regacy_inference(self, user_content):
         if "apply_chat_template" in self.cfg.tokenizer:
             chat = self.get_chat(
                 user_content,
@@ -137,7 +137,7 @@ class LLM(object):
                     prompt, **self.cfg.tokenizer.call
                 ).input_ids.to(self.model.device)
 
-        with torch.no_grad():
+        with torch.no_grad():  # Regacy Inference Mode
             if self.streamer is not None:
                 output = self.model.generate(
                     tokenized_input,
@@ -152,3 +152,9 @@ class LLM(object):
 
         output = output[tokenized_input.size(-1) :]
         return self.tokenizer.decode(output, **self.cfg.tokenizer.decode)
+
+    def __call__(self, user_content):
+        if self.pipeline is not None:
+            return self.pipeline_inference(user_content)
+
+        return self.regacy_inference(user_content)
