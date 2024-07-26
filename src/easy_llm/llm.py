@@ -10,7 +10,6 @@ from transformers import (
     AutoModelForCausalLM,
     TextStreamer,
     pipeline,
-    Conversation,
 )
 from peft import AutoPeftModelForCausalLM
 
@@ -124,10 +123,7 @@ class LLM(object):
         return chat
 
     def pipeline_inference(self, user_content):
-        if "convasation" in self.cfg:
-            messages = Conversation(user_content)
-        else:
-            messages = self.get_chat(user_content)
+        messages = self.get_chat(user_content)
 
         if "apply_chat_template" in self.cfg.get("tokenizer", {}):
             messages = self.tokenizer.apply_chat_template(

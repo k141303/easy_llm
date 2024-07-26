@@ -31,7 +31,6 @@ print(model("自然言語処理とは何か"))
 - cyberagent/calm3-22b-chat
 - elyza/Llama-3-ELYZA-JP-8B
 - Fugaku-LLM/Fugaku-LLM-13B-instruct
-- karakuri-ai/karakuri-lm-70b-chat-v0.1
 - lightblue/ao-karasu-72B
 - llm-jp/llm-jp-13b-instruct-full-dolly-ichikara_004_001_single-oasst-oasst2-v2.0
 - llm-jp/llm-jp-13b-instruct-full-ac_001_16x-dolly-ichikara_004_001_single-oasst-oasst2-v2.0
@@ -48,3 +47,8 @@ print(model("自然言語処理とは何か"))
 - meta-llama/Meta-Llama-3-70B-Instruct
 - google/gemma-1.1-7b-it
 - Qwen/Qwen2-72B-Instruct
+
+## 現在非対応
+
+- karakuri-ai/karakuri-lm-70b-chat-v0.1
+(transformers>=4.42でConversationクラスが削除されたため動きません。)
