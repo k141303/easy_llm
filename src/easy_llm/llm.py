@@ -14,6 +14,9 @@ from transformers import (
 )
 from peft import AutoPeftModelForCausalLM
 
+from vllm import LLM as VLLM
+from vllm import SamplingParams
+
 load_dotenv()
 
 
@@ -53,6 +56,16 @@ class LLM(object):
                 **self.wrp_pipeline_init(**self.cfg.pipeline.init),
             )
 
+        self.vllm = None
+        if "vllm" in self.cfg:
+            self.vllm = VLLM(
+                **self.wrp_vllm_init(**self.cfg.vllm.init),
+            )
+
+        self.sample_params = None
+        if "sample_params" in self.cfg:
+            self.sample_params = SamplingParams(**self.cfg.sample_params)
+
         if self.model is not None and self.cfg.model.get("eval"):
             self.model.eval()
 
@@ -82,6 +95,13 @@ class LLM(object):
             kwargs["torch_dtype"] = eval(kwargs["torch_dtype"])
         return kwargs
 
+    def wrp_vllm_init(self, **kwargs):
+        if self.tokenizer is not None:
+            kwargs["tokenizer"] = self.tokenizer
+        if self.model is not None:
+            kwargs["model"] = self.model
+        return kwargs
+
     def wrp_model_generate(self, **kwargs):
         if type(kwargs.get("pad_token_id")) is str:
             kwargs["pad_token_id"] = eval(kwargs["pad_token_id"])
@@ -89,6 +109,11 @@ class LLM(object):
             kwargs["eos_token_id"] = eval(kwargs["eos_token_id"])
         if type(kwargs.get("bos_token_id")) is str:
             kwargs["bos_token_id"] = eval(kwargs["bos_token_id"])
+        return kwargs
+
+    def wrp_vllm_generate(self, **kwargs):
+        if self.sample_params is not None:
+            kwargs["sample_params"] = self.sample_params
         return kwargs
 
     def get_chat(self, user_content):
@@ -159,8 +184,30 @@ class LLM(object):
         output = output[tokenized_input.size(-1) :]
         return self.tokenizer.decode(output, **self.cfg.tokenizer.decode)
 
+    def vllm_inference(self, user_content):
+        if "apply_chat_template" in self.cfg.tokenizer:
+            chat = self.get_chat(
+                user_content,
+            )
+            chat_template = self.tokenizer.apply_chat_template(
+                chat, **self.cfg.tokenizer.apply_chat_template
+            )
+        else:
+            raise NotImplementedError(
+                "VLLM Inference Mode is not implemented without apply_chat_template"
+            )
+
+        output = self.vllm.generate(
+            chat_template,
+            **self.wrp_vllm_generate(**self.cfg.vllm.generate),
+        )
+        return output[0].outputs[0].text
+
     def __call__(self, user_content):
         if self.pipeline is not None:
             return self.pipeline_inference(user_content)
+
+        if self.vllm is not None:
+            return self.vllm_inference(user_content)
 
         return self.regacy_inference(user_content)
