@@ -109,7 +109,7 @@ class LLM(object):
 
     def wrp_vllm_generate(self, **kwargs):
         if self.sample_params is not None:
-            kwargs["sample_params"] = self.sample_params
+            kwargs["sampling_params"] = self.sample_params
         return kwargs
 
     def get_chat(self, user_content):
