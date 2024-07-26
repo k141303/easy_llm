@@ -39,6 +39,8 @@ print(model("自然言語処理とは何か"))
 - rinna/nekomata-14b-instruction
 - stockmark/stockmark-100b-instruct-v0.1
 - tokyotech-llm/Swallow-70b-instruct-hf
+- tokyotech-llm/Llama-3-Swallow-8B-Instruct-v0.1
+- tokyotech-llm/Llama-3-Swallow-70B-Instruct-v0.1
 
 ### 海外産
 - microsoft/Phi-3-medium-4k-instruct
