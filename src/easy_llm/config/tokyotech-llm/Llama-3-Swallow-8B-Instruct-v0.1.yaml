@@ -1,0 +1,22 @@
+prompt:
+  system:
+    content: あなたは誠実で優秀な日本人のアシスタントです。
+name_or_path: tokyotech-llm/Llama-3-Swallow-8B-Instruct-v0.1
+
+vllm:
+  init:
+    tensor_parallel_size: 1
+
+sample_params:
+  temperature: 0.6
+  top_p: 0.9
+  stop: "<|eot_id|>"
+  max_tokens: 1000
+
+tokenizer:
+  from_pretrained:
+    pretrained_model_name_or_path: ${name_or_path}
+
+  apply_chat_template: 
+    add_generation_prompt: true
+    tokenize: false
