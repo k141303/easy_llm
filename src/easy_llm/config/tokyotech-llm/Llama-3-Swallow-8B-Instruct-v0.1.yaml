@@ -5,6 +5,7 @@ name_or_path: tokyotech-llm/Llama-3-Swallow-8B-Instruct-v0.1
 
 vllm:
   init:
+    model: ${name_or_path}
     tensor_parallel_size: 1
 
 sample_params:

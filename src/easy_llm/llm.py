@@ -95,10 +95,7 @@ class LLM(object):
         return kwargs
 
     def wrp_vllm_init(self, **kwargs):
-        if self.tokenizer is not None:
-            kwargs["tokenizer"] = self.tokenizer
-        if self.model is not None:
-            kwargs["model"] = self.model
+        kwargs["download_dir"] = os.environ.get("HF_CACHE_DIR", "./.cache")
         return kwargs
 
     def wrp_model_generate(self, **kwargs):
