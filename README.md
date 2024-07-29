@@ -15,13 +15,19 @@ export HF_CACHE_DIR=DIR_NAME
 
 ## 使い方
 
+### シングルターン
+
+```bash
+python3 example/single_turn_inference.py
+```
+
+### マルチターン
+
+> [!NOTE]
+> [apply_chat_template()](https://huggingface.co/docs/transformers/main/ja/internal/tokenization_utils#transformers.PreTrainedTokenizerBase.apply_chat_template)を使用しないモデルは非対応です。
+
 ```python
-from easy_llm import load_llm
-
-MODEL_NAME = "llm-jp/llm-jp-13b-instruct-full-ac_001_16x-dolly-ichikara_004_001_single-oasst-oasst2-v2.0"
-
-model = load_llm(MODEL_NAME)
-print(model("自然言語処理とは何か"))
+python3 example/multi_turn_inference.py
 ```
 
 ## 対応済みモデル
