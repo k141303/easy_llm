@@ -23,28 +23,28 @@ python3 example/single_turn_inference.py
 
 ### マルチターン
 
-> [!NOTE]
-> [apply_chat_template()](https://huggingface.co/docs/transformers/main/ja/internal/tokenization_utils#transformers.PreTrainedTokenizerBase.apply_chat_template)を使用しないモデルは非対応です。
-
 ```python
 python3 example/multi_turn_inference.py
 ```
 
 ## 対応済みモデル
 
+> [!NOTE]
+> [apply_chat_template()](https://huggingface.co/docs/transformers/main/ja/internal/tokenization_utils#transformers.PreTrainedTokenizerBase.apply_chat_template)や[pipeline()](https://huggingface.co/docs/transformers/ja/main_classes/pipelines#transformers.pipeline)を使用しないモデル(※1)はマルチターン非対応です。
+
 ### 国産
-- cyberagent/calm2-7b-chat
+- cyberagent/calm2-7b-chat ※1
 - cyberagent/calm3-22b-chat
 - elyza/Llama-3-ELYZA-JP-8B
-- Fugaku-LLM/Fugaku-LLM-13B-instruct
+- Fugaku-LLM/Fugaku-LLM-13B-instruct ※1
 - lightblue/ao-karasu-72B
 - llm-jp/llm-jp-13b-instruct-full-dolly-ichikara_004_001_single-oasst-oasst2-v2.0
 - llm-jp/llm-jp-13b-instruct-full-ac_001_16x-dolly-ichikara_004_001_single-oasst-oasst2-v2.0
-- matsuo-lab/weblab-10b-instruction-sft
-- pfnet/plamo-13b-instruct
-- rinna/nekomata-14b-instruction
-- stockmark/stockmark-100b-instruct-v0.1
-- tokyotech-llm/Swallow-70b-instruct-hf
+- matsuo-lab/weblab-10b-instruction-sft ※1
+- pfnet/plamo-13b-instruct ※1
+- rinna/nekomata-14b-instruction ※1
+- stockmark/stockmark-100b-instruct-v0.1 ※1
+- tokyotech-llm/Swallow-70b-instruct-hf ※1
 - tokyotech-llm/Llama-3-Swallow-8B-Instruct-v0.1
 - tokyotech-llm/Llama-3-Swallow-70B-Instruct-v0.1
 
