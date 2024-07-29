@@ -112,15 +112,35 @@ class LLM(object):
             kwargs["sampling_params"] = self.sample_params
         return kwargs
 
-    def get_chat(self, user_content):
-        chat = []
+    def get_messages(self, model_input):
+        messages = []
         if self.cfg.get("prompt") is not None:
-            chat.append({"role": "system", "content": self.cfg.prompt.system.content})
-        chat.append({"role": "user", "content": user_content})
-        return chat
+            messages.append(
+                {"role": "system", "content": self.cfg.prompt.system.content}
+            )
+        if isinstance(model_input, str):
+            messages.append({"role": "user", "content": model_input})
+        elif isinstance(model_input, list):
+            for i, content in enumerate(model_input):
+                if i % 2 == 0:
+                    messages.append({"role": "user", "content": content})
+                else:
+                    messages.append({"role": "system", "content": content})
+        else:
+            raise ValueError("Input must be str or list")
+        return messages
 
-    def pipeline_inference(self, user_content):
-        messages = self.get_chat(user_content)
+    def get_prompt(self, model_input):
+        if isinstance(model_input, str):
+            prompt = self.cfg.prompt.format(model_input=model_input)
+        elif isinstance(model_input, list):
+            raise NotImplementedError("Prompt is not implemented for multi-turn input")
+        else:
+            raise ValueError("Input must be str or list")
+        return prompt
+
+    def pipeline_inference(self, model_input):
+        messages = self.get_messages(model_input)
 
         if "apply_chat_template" in self.cfg.get("tokenizer", {}):
             messages = self.tokenizer.apply_chat_template(
@@ -136,13 +156,13 @@ class LLM(object):
             return messages
         return self.pipeline(messages, **self.cfg.pipeline.call)[-1]["content"]
 
-    def regacy_inference(self, user_content):
+    def regacy_inference(self, model_input):
         if "apply_chat_template" in self.cfg.tokenizer:
-            chat = self.get_chat(
-                user_content,
+            messages = self.get_messages(
+                model_input,
             )
             chat_template = self.tokenizer.apply_chat_template(
-                chat, **self.cfg.tokenizer.apply_chat_template
+                messages, **self.cfg.tokenizer.apply_chat_template
             )
             if not self.cfg.tokenizer.apply_chat_template.get("tokenize", True):
                 tokenized_input = self.tokenizer.encode(
@@ -151,7 +171,7 @@ class LLM(object):
             else:
                 tokenized_input = chat_template.to(self.model.device)
         else:
-            prompt = self.cfg.prompt.format(user_content=user_content)
+            prompt = self.get_prompt(model_input)
             if "encode" in self.cfg.tokenizer:
                 tokenized_input = self.tokenizer.encode(
                     prompt, **self.cfg.tokenizer.encode
@@ -177,13 +197,13 @@ class LLM(object):
         output = output[tokenized_input.size(-1) :]
         return self.tokenizer.decode(output, **self.cfg.tokenizer.decode)
 
-    def vllm_inference(self, user_content):
+    def vllm_inference(self, model_input):
         if "apply_chat_template" in self.cfg.tokenizer:
-            chat = self.get_chat(
-                user_content,
+            messages = self.get_messages(
+                model_input,
             )
             chat_template = self.tokenizer.apply_chat_template(
-                chat, **self.cfg.tokenizer.apply_chat_template
+                messages, **self.cfg.tokenizer.apply_chat_template
             )
         else:
             raise NotImplementedError(
@@ -196,11 +216,11 @@ class LLM(object):
         )
         return output[0].outputs[0].text
 
-    def __call__(self, user_content):
+    def __call__(self, model_input):
         if self.pipeline is not None:
-            return self.pipeline_inference(user_content)
+            return self.pipeline_inference(model_input)
 
         if self.vllm is not None:
-            return self.vllm_inference(user_content)
+            return self.vllm_inference(model_input)
 
-        return self.regacy_inference(user_content)
+        return self.regacy_inference(model_input)
