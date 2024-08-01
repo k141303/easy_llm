@@ -246,12 +246,9 @@ class OpenAIClient(LLM):
     def __call__(self, model_input):
         messages = self.get_messages(model_input)
 
-        try:
-            response = self.client.chat.completions.create(
-                messages=messages, **self.cfg.client.chat.completions.create
-            )
-        except Exception as e:
-            return str(e)
+        response = self.client.chat.completions.create(
+            messages=messages, **self.cfg.client.chat.completions.create
+        )
 
         return response.choices[0].message.content
 
