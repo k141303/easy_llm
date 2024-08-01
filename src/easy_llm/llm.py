@@ -16,7 +16,7 @@ from transformers import (
 )
 from peft import AutoPeftModelForCausalLM
 
-from openai import AzureOpenAI
+from openai import AzureOpenAI, BadRequestError
 
 import boto3
 
@@ -246,9 +246,12 @@ class OpenAIClient(LLM):
     def __call__(self, model_input):
         messages = self.get_messages(model_input)
 
-        response = self.client.chat.completions.create(
-            messages=messages, **self.cfg.client.chat.completions.create
-        )
+        try:
+            response = self.client.chat.completions.create(
+                messages=messages, **self.cfg.client.chat.completions.create
+            )
+        except Exception as e:
+            return str(e)
 
         return response.choices[0].message.content
 
