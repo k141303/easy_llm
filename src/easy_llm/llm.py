@@ -246,10 +246,8 @@ class OpenAIClient(LLM):
     def __call__(self, model_input):
         messages = self.get_messages(model_input)
 
-        # **self.cfg.client.chat.completions.create
         response = self.client.chat.completions.create(
-            model=self.cfg.name,
-            messages=messages,
+            messages=messages, **self.cfg.client.chat.completions.create
         )
 
         return response.choices[0].message.content
