@@ -243,12 +243,11 @@ class OpenAIClient(LLM):
             azure_endpoint=os.environ["OPENAI_API_BASE"],
         )
 
-    def __call__(self, model_input, max_tokens=1000, temperature=0.7):
+    def __call__(self, model_input):
         messages = self.get_messages(model_input)
 
         response = self.client.chat.completions.create(
-            model=self.cfg.name,
-            messages=messages,
+            model=self.cfg.name, messages=messages
         )
 
         return response.choices[0].message.content
