@@ -1,0 +1,4 @@
+prompt:
+  system:
+    content: あなたは親切なアシスタントです。
+name: anthropic.claude-3-5-sonnet-20240620-v1:0

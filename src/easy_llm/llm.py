@@ -1,4 +1,7 @@
 import os
+
+import requests
+
 from dotenv import load_dotenv
 
 from omegaconf import OmegaConf
@@ -12,6 +15,10 @@ from transformers import (
     pipeline,
 )
 from peft import AutoPeftModelForCausalLM
+
+from openai import AzureOpenAI
+
+import boto3
 
 from vllm import LLM as VLLM
 from vllm import SamplingParams
@@ -125,7 +132,7 @@ class LLM(object):
                 if i % 2 == 0:
                     messages.append({"role": "user", "content": content})
                 else:
-                    messages.append({"role": "system", "content": content})
+                    messages.append({"role": "assistant", "content": content})
         else:
             raise ValueError("Input must be str or list")
         return messages
@@ -224,3 +231,67 @@ class LLM(object):
             return self.vllm_inference(model_input)
 
         return self.regacy_inference(model_input)
+
+
+class OpenAIClient(LLM):
+    def __init__(self, cfg_path):
+        self.cfg = OmegaConf.load(cfg_path)
+
+        self.client = AzureOpenAI(
+            api_key=os.environ["OPENAI_API_KEY"],
+            api_version=os.environ["OPENAI_API_VERSION"],
+            azure_endpoint=os.environ["OPENAI_API_BASE"],
+        )
+
+    def __call__(self, model_input, max_tokens=1000, temperature=0.7):
+        messages = self.get_messages(model_input)
+
+        response = self.client.chat.completions.create(
+            model=self.cfg.name,
+            messages=messages,
+        )
+
+        return response.choices[0].message.content
+
+
+class BedrockClient(object):
+    def __init__(self, cfg_path):
+        self.cfg = OmegaConf.load(cfg_path)
+        self.client = boto3.client(
+            service_name="bedrock-runtime",
+            aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+            aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
+        )
+
+        self.system_prompts = [
+            {
+                "text": self.cfg.prompt.system.content,
+            }
+        ]
+
+    def get_messages(self, model_input):
+        messages = []
+        if isinstance(model_input, str):
+            messages.append({"role": "user", "content": [{"text": model_input}]})
+        elif isinstance(model_input, list):
+            for i, content in enumerate(model_input):
+                if i % 2 == 0:
+                    messages.append({"role": "user", "content": [{"text": content}]})
+                else:
+                    messages.append(
+                        {"role": "assistant", "content": [{"text": content}]}
+                    )
+        else:
+            raise ValueError("Input must be str or list")
+        return messages
+
+    def __call__(self, model_input):
+        messages = self.get_messages(model_input)
+
+        response = self.client.converse(
+            modelId=self.cfg.name,
+            messages=messages,
+            system=self.system_prompts,
+        )
+
+        return response["output"]["message"]["content"][0]["text"]
