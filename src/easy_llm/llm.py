@@ -23,7 +23,7 @@ import boto3
 from vllm import LLM as VLLM
 from vllm import SamplingParams
 
-load_dotenv()
+load_dotenv(override=True)
 
 
 class LLM(object):
@@ -239,15 +239,17 @@ class OpenAIClient(LLM):
 
         self.client = AzureOpenAI(
             api_key=os.environ["OPENAI_API_KEY"],
-            api_version=os.environ["OPENAI_API_VERSION"],
+            api_version="2023-05-15",
             azure_endpoint=os.environ["OPENAI_API_BASE"],
         )
 
     def __call__(self, model_input):
         messages = self.get_messages(model_input)
 
+        # **self.cfg.client.chat.completions.create
         response = self.client.chat.completions.create(
-            model=self.cfg.name, messages=messages
+            model=self.cfg.name,
+            messages=messages,
         )
 
         return response.choices[0].message.content

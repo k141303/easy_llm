@@ -1,7 +1,7 @@
 prompt:
   system:
     content: あなたは親切なアシスタントです。
-name: gpt-4-0613
+name: gpt-35-turbo-1106
 
 client:
   chat:
