@@ -288,9 +288,11 @@ class BedrockClient(object):
     def __call__(self, model_input):
         messages = self.get_messages(model_input)
 
+        inferenceConfig = dict(self.cfg.inferenceConfig)
         response = self.client.converse(
             modelId=self.cfg.name,
             messages=messages,
+            inferenceConfig=inferenceConfig,
             system=self.system_prompts,
         )
 

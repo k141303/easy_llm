@@ -1,4 +1,11 @@
 prompt:
   system:
     content: あなたは親切なアシスタントです。
-name: openai/gpt-4o-2024-05-13
+name: gpt-4o-2024-05-13
+
+client:
+  chat:
+    completions:
+      create:
+        model: ${name}
+        max_tokens: 1000
