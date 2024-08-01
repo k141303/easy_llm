@@ -7,6 +7,7 @@ vllm:
   init:
     model: ${name_or_path}
     tensor_parallel_size: 4
+    max_model_len: 4096
 
 sample_params:
   temperature: 0.6
