@@ -1,6 +1,6 @@
 prompt:
   system:
-    content: あなたは親切なアシスタントです。
+    content: あなたは親切なアシスタントです。ユーザーの指示には日本語で応答してください。
 name_or_path: meta-llama/Meta-Llama-3-8B-Instruct
 
 pipeline:
