@@ -54,6 +54,7 @@ python3 example/multi_turn_inference.py
 - meta-llama/Meta-Llama-3-8B-Instruct
 - meta-llama/Meta-Llama-3-70B-Instruct
 - google/gemma-1.1-7b-it
+- google/gemma-2-27b-it
 - Qwen/Qwen2-72B-Instruct
 
 ## 現在非対応
