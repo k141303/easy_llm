@@ -1,5 +1,6 @@
 prompt: "### 指示:\n{user_content}\n\n### 応答:\n"
 name_or_path: stockmark/stockmark-100b-instruct-v0.1
+max_new_tokens: 1000
 
 model:
   peft: true
@@ -13,7 +14,7 @@ model:
     temperature: 0.7
     top_p: 0.95
     repetition_penalty: 1.08
-    max_new_tokens: 1000
+    max_new_tokens: ${max_new_tokens}
 
 tokenizer:
   from_pretrained:

@@ -1,4 +1,5 @@
 name_or_path: microsoft/Phi-3-medium-4k-instruct
+max_new_tokens: 1000
 
 model:
   peft: false
@@ -12,7 +13,7 @@ model:
     do_sample: true
     temperature: 0.99
     top_p: 0.95
-    max_new_tokens: 1000
+    max_new_tokens: ${max_new_tokens}
 
 tokenizer:
   from_pretrained:

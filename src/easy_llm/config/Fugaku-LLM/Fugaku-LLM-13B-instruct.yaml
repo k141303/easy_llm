@@ -1,5 +1,6 @@
 prompt: "以下は、タスクを説明する指示です。要求を適切に満たす応答を書きなさい。\n\n### 指示:\n{user_content}\n\n### 応答:\n"
 name_or_path: Fugaku-LLM/Fugaku-LLM-13B-instruct
+max_new_tokens: 1000
 
 model:
   peft: false
@@ -14,7 +15,7 @@ model:
     top_p: 1.0
     repetition_penalty: 1.0
     top_k: 0
-    max_new_tokens: 1000
+    max_new_tokens: ${max_new_tokens}
 
 tokenizer:
   from_pretrained:

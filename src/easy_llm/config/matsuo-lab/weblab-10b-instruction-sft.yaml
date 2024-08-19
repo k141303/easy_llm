@@ -1,5 +1,6 @@
 prompt: "以下は、タスクを説明する指示です。要求を適切に満たす応答を書きなさい。\n\n### 指示:\n{user_content}\n\n### 応答:"
 name_or_path: matsuo-lab/weblab-10b-instruction-sft
+max_new_tokens: 1000
 
 model:
   peft: false
@@ -12,7 +13,7 @@ model:
     do_sample: true
     temperature: 0.7
     top_p: 0.95
-    max_new_tokens: 1000
+    max_new_tokens: ${max_new_tokens}
 
 tokenizer:
   from_pretrained:

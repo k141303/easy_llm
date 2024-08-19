@@ -2,6 +2,7 @@ prompt:
   system:
     content: You are a pirate chatbot who always responds in pirate speak!
 name_or_path: meta-llama/Meta-Llama-3-70B-Instruct
+max_new_tokens: 1000
 
 pipeline:
   init:
@@ -12,7 +13,7 @@ pipeline:
       torch_dtype: torch.bfloat16
 
   call:
-    max_new_tokens: 1000
+    max_new_tokens: ${max_new_tokens}
     do_sample: true
     temperature: 0.6
     top_p: 0.9

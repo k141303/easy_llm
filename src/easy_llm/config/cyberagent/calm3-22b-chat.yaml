@@ -2,6 +2,7 @@ prompt:
   system:
     content: あなたは親切なAIアシスタントです。
 name_or_path: cyberagent/calm3-22b-chat
+max_new_tokens: 1000
 
 model:
   peft: false
@@ -13,7 +14,7 @@ model:
   generate:
     do_sample: true
     temperature: 0.5
-    max_new_tokens: 1000
+    max_new_tokens: ${max_new_tokens}
 
 tokenizer:
   from_pretrained:

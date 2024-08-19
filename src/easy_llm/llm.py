@@ -27,8 +27,11 @@ load_dotenv(override=True)
 
 
 class LLM(object):
-    def __init__(self, cfg_path):
+    def __init__(self, cfg_path, max_new_tokens=None):
         self.cfg = OmegaConf.load(cfg_path)
+
+        if max_new_tokens is not None:
+            self.cfg.max_new_tokens = max_new_tokens
 
         self.tokenizer = None
         if "tokenizer" in self.cfg:
@@ -223,7 +226,10 @@ class LLM(object):
         )
         return output[0].outputs[0].text
 
-    def __call__(self, model_input):
+    def __call__(self, model_input, max_new_tokens=None):
+        if max_new_tokens is not None:
+            self.cfg.max_new_tokens = max_new_tokens
+
         if self.pipeline is not None:
             return self.pipeline_inference(model_input)
 
@@ -234,8 +240,11 @@ class LLM(object):
 
 
 class OpenAIClient(LLM):
-    def __init__(self, cfg_path):
+    def __init__(self, cfg_path, max_new_tokens=None):
         self.cfg = OmegaConf.load(cfg_path)
+
+        if max_new_tokens is not None:
+            self.cfg.max_new_tokens = max_new_tokens
 
         self.client = AzureOpenAI(
             api_key=os.environ["OPENAI_API_KEY"],
@@ -243,7 +252,10 @@ class OpenAIClient(LLM):
             azure_endpoint=os.environ["OPENAI_API_BASE"],
         )
 
-    def __call__(self, model_input):
+    def __call__(self, model_input, max_new_tokens=None):
+        if max_new_tokens is not None:
+            self.cfg.max_new_tokens = max_new_tokens
+
         messages = self.get_messages(model_input)
 
         response = self.client.chat.completions.create(
@@ -256,6 +268,7 @@ class OpenAIClient(LLM):
 class BedrockClient(object):
     def __init__(self, cfg_path):
         self.cfg = OmegaConf.load(cfg_path)
+
         self.client = boto3.client(
             service_name="bedrock-runtime",
             aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
@@ -284,7 +297,10 @@ class BedrockClient(object):
             raise ValueError("Input must be str or list")
         return messages
 
-    def __call__(self, model_input):
+    def __call__(self, model_input, max_new_tokens=None):
+        if max_new_tokens is not None:
+            self.cfg.max_new_tokens = max_new_tokens
+
         messages = self.get_messages(model_input)
 
         inferenceConfig = dict(self.cfg.inferenceConfig)

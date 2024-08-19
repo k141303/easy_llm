@@ -1,5 +1,6 @@
 prompt: "# system\n誠実で紳士的で優秀なAIアシスタントとして、簡潔でわかりやすく役に立つ回答を自信をもって答えなさい。\n\n# question\n{user_content}\n\n# answer"
 name_or_path: abeja/Mixtral-8x7B-Instruct-v0.1-japanese
+max_new_tokens: 1000
 
 model:
   peft: false
@@ -13,7 +14,7 @@ model:
   generate:
     pad_token_id: self.tokenizer.pad_token_id
     eos_token_id: self.tokenizer.eos_token_id
-    max_new_tokens: 1000
+    max_new_tokens: ${max_new_tokens}
 
 tokenizer:
   from_pretrained:

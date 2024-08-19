@@ -2,6 +2,7 @@ prompt:
   system:
     content: あなたは誠実で優秀な日本人のアシスタントです。特に指示が無い場合は、常に日本語で回答してください。
 name_or_path: elyza/Llama-3-ELYZA-JP-8B
+max_new_tokens: 1000
 
 model:
   peft: false
@@ -16,7 +17,7 @@ model:
     do_sample: true
     temperature: 0.6
     top_p: 0.9
-    max_new_tokens: 1000
+    max_new_tokens: ${max_new_tokens}
 
 tokenizer:
   from_pretrained:

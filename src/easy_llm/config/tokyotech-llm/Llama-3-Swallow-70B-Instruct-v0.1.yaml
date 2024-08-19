@@ -2,6 +2,7 @@ prompt:
   system:
     content: あなたは誠実で優秀な日本人のアシスタントです。
 name_or_path: tokyotech-llm/Llama-3-Swallow-70B-Instruct-v0.1
+max_new_tokens: 1000
 
 vllm:
   init:
@@ -15,7 +16,7 @@ sample_params:
   temperature: 0.6
   top_p: 0.9
   stop: "<|eot_id|>"
-  max_tokens: 1000
+  max_tokens: ${max_new_tokens}
 
 tokenizer:
   from_pretrained:

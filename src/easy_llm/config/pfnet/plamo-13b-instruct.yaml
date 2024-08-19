@@ -1,5 +1,6 @@
 prompt: "以下はタスクを説明する指示で、文脈を説明した入力とペアになっています。要求を適切に補完するよう応答を書いてください。\n\n### 指示:\n{user_content}\n\n### 応答:\n"
 name_or_path: pfnet/plamo-13b-instruct
+max_new_tokens: 1000
 
 model:
   peft: false
@@ -16,7 +17,7 @@ model:
     temperature: 1.0
     top_p: 0.95
     top_k: 50
-    max_new_tokens: 1000
+    max_new_tokens: ${max_new_tokens}
 
 tokenizer:
   from_pretrained:

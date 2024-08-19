@@ -1,4 +1,5 @@
 name_or_path: lightblue/ao-karasu-72B
+max_new_tokens: 1000
 
 prompt:
   system:
@@ -22,7 +23,7 @@ pipeline:
   init:
     task: text-generation
   call:
-    max_new_tokens: 1000
+    max_new_tokens: ${max_new_tokens}
     do_sample: false
     temperature: 0.0
     return_full_text: false

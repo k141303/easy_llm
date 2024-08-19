@@ -1,4 +1,5 @@
 name_or_path: Qwen/Qwen2-72B-Instruct
+max_new_tokens: 1000
 
 prompt:
   system:
@@ -12,7 +13,7 @@ model:
     torch_dtype: auto
 
   generate:
-    max_new_tokens: 1000
+    max_new_tokens: ${max_new_tokens}
 
 tokenizer:
   from_pretrained:

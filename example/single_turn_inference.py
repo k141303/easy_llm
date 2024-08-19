@@ -5,7 +5,7 @@ model_name = "llm-jp/llm-jp-13b-instruct-full-ac_001_16x-dolly-ichikara_004_001_
 model = load_llm(model_name)
 
 instruction = "自然言語処理とは何か"
-response = model(instruction)
+response = model(instruction, max_new_tokens=10)
 
 print(f"### 指示:\n{instruction}")
 print(f"\n\n### 応答:\n{response}")

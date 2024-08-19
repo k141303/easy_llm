@@ -2,10 +2,11 @@ prompt:
   system:
     content: あなたは親切なアシスタントです。
 name: gpt-35-turbo-1106
+max_new_tokens: 1000
 
 client:
   chat:
     completions:
       create:
         model: ${name}
-        max_tokens: 1000
+        max_tokens: ${max_new_tokens}
