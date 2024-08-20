@@ -25,6 +25,6 @@ pipeline:
       text-generation
 
   call:
-    max_new_tokens: 1000
+    max_new_tokens: ${max_new_tokens}
     temperature: 0.0
     do_sample: false
